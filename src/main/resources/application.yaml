@@ -1,3 +1,18 @@
 spring:
   application:
     name: lovable-clone
+
+  datasource:
+    url: jdbc:postgresql://localhost:9000/testDB
+    username: testUser
+    password: password
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
