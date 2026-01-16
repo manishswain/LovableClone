@@ -54,22 +54,38 @@ public class ProjectServiceImpl implements ProjectService {
 
         var projects = projectRepository.findAllAccessibleByUser(userId);
         return projectMapper.toProjectSummaryResponseList(projects);
-
-
     }
 
     @Override
     public ProjectResponse getUserProjectById(Long id, Long userId) {
-        return null;
+        Project project = getAccessibleProjectByIdAndUserId(id, userId);
+        return projectMapper.toProjectResponse(project);
     }
 
     @Override
     public ProjectResponse updateProject(Long id, ProjectRequest request, Long userId) {
-        return null;
+        Project project = getAccessibleProjectByIdAndUserId(id, userId);
+
+        project.setName(request.name());
+        project = projectRepository.save(project);
+
+        return projectMapper.toProjectResponse(project);
+
     }
 
     @Override
     public void softDelete(Long id, Long userId) {
+        Project project = getAccessibleProjectByIdAndUserId(id, userId);
 
+        if(!project.getOwner().getId().equals(userId))
+            throw new RuntimeException(("You are not authorized to delete this project"));
+        project.setDeletedAt(java.time.Instant.now());
+        projectRepository.save(project);
+    }
+
+    /// Internal method to get project by id and userId
+    private Project getAccessibleProjectByIdAndUserId(Long projectId, Long userId) {
+        return projectRepository.findAccessibleProjectById(projectId, userId)
+                .orElseThrow();
     }
 }
