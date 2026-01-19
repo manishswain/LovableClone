@@ -5,6 +5,7 @@ import com.codingshuttle.projects.lovable_clone.dto.project.ProjectResponse;
 import com.codingshuttle.projects.lovable_clone.dto.project.ProjectSummaryResponse;
 import com.codingshuttle.projects.lovable_clone.entity.Project;
 import com.codingshuttle.projects.lovable_clone.entity.User;
+import com.codingshuttle.projects.lovable_clone.error.ResourceNotFoundException;
 import com.codingshuttle.projects.lovable_clone.mapper.ProjectMapper;
 import com.codingshuttle.projects.lovable_clone.repository.ProjectRepository;
 import com.codingshuttle.projects.lovable_clone.repository.UserRepository;
@@ -77,7 +78,7 @@ public class ProjectServiceImpl implements ProjectService {
     public void softDelete(Long id, Long userId) {
         Project project = getAccessibleProjectByIdAndUserId(id, userId);
 
-        if(!project.getOwner().getId().equals(userId))
+        if (!project.getOwner().getId().equals(userId))
             throw new RuntimeException(("You are not authorized to delete this project"));
         project.setDeletedAt(java.time.Instant.now());
         projectRepository.save(project);
@@ -86,6 +87,6 @@ public class ProjectServiceImpl implements ProjectService {
     /// Internal method to get project by id and userId
     private Project getAccessibleProjectByIdAndUserId(Long projectId, Long userId) {
         return projectRepository.findAccessibleProjectById(projectId, userId)
-                .orElseThrow();
+                .orElseThrow(() -> new ResourceNotFoundException("Project", projectId.toString()));
     }
 }
