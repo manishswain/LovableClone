@@ -35,26 +35,19 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     @Override
     public List<MemberResponse> getProjectMembers(Long projectId, Long userId) {
         Project project = getAccessibleProjectByIdAndUserId(projectId, userId);
-        List<MemberResponse> memberResponseList = new ArrayList<>();
-        memberResponseList.add(projectMemberMapper.toProjectMemberResponse(project.getOwner()));
 
-        projectMemberRepository.findByIdProjectId(projectId)
+        return projectMemberRepository.findByIdProjectId(projectId)
                 .stream()
                 .map(projectMemberMapper::toProjectMemberResponseFromMember)
-                .forEach(memberResponseList::add);
-
-        return memberResponseList;
+                .toList();
     }
 
     @Override
     public MemberResponse inviteMember(Long projectId, InviteMemberRequest request, Long userId) {
         Project project = getAccessibleProjectByIdAndUserId(projectId, userId);
 
-        if(!project.getOwner().getId().equals(userId))
-            throw new RuntimeException("Only project owner can invite members");
-
-        User invitee = userRepository.findByEmail(request.email())
-                .orElseThrow(() -> new RuntimeException("User with email " + request.email() + " not found"));
+        User invitee = userRepository.findByUsername(request.username())
+                .orElseThrow(() -> new RuntimeException("User with email " + request.username() + " not found"));
 
         if(invitee.getId().equals(userId))
             throw new RuntimeException("Owner cannot be invited as member");
@@ -81,9 +74,6 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     public MemberResponse updateMemberRole(Long projectId, Long memberId, UpdateMemberRoleRequest request, Long userId) {
         Project project = getAccessibleProjectByIdAndUserId(projectId, userId);
 
-        if(!project.getOwner().getId().equals(userId))
-            throw new RuntimeException("Only project owner can update members role");
-
         ProjectMemberId projectMemberId = new ProjectMemberId(projectId, memberId);
 
         ProjectMember projectMember = projectMemberRepository.findById(projectMemberId)
@@ -98,9 +88,6 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     @Override
     public void removeProjectMember(Long projectId, Long memberId, Long userId) {
         Project project = getAccessibleProjectByIdAndUserId(projectId, userId);
-
-        if(!project.getOwner().getId().equals(userId))
-            throw new RuntimeException("Only project owner can update members role");
 
         ProjectMemberId projectMemberId = new ProjectMemberId(projectId, memberId);
 
