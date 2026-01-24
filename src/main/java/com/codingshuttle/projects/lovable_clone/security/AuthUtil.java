@@ -4,6 +4,9 @@ import com.codingshuttle.projects.lovable_clone.entity.User;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -43,6 +46,16 @@ public class AuthUtil {
         String username = claimsJws.getSubject();
 
         return new JwtUserPrincipal(userId, username ,new ArrayList<>());
+    }
+
+    public Long getCurrentUserId(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if(authentication !=null && (authentication.getPrincipal() instanceof JwtUserPrincipal userPrincipal)){
+            return userPrincipal.userId();
+        }else{
+            throw new AuthenticationCredentialsNotFoundException("No JWT principal found in security context");
+        }
+
     }
 
 
