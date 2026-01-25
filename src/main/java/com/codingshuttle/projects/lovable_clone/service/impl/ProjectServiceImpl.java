@@ -19,6 +19,7 @@ import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -77,6 +78,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
+    @PreAuthorize("@security.canViewProject(#id)")
     public ProjectResponse getUserProjectById(Long id) {
         Long userId = authUtil.getCurrentUserId();
         Project project = getAccessibleProjectByIdAndUserId(id, userId);
@@ -84,6 +86,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
+    @PreAuthorize("@security.canEditProject(#id)")
     public ProjectResponse updateProject(Long id, ProjectRequest request) {
         Long userId = authUtil.getCurrentUserId();
         Project project = getAccessibleProjectByIdAndUserId(id, userId);
@@ -96,6 +99,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
+    @PreAuthorize("@security.canDeleteProject(#id)")
     public void softDelete(Long id) {
         Long userId = authUtil.getCurrentUserId();
         Project project = getAccessibleProjectByIdAndUserId(id, userId);
