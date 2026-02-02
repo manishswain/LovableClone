@@ -55,9 +55,5 @@ public class AuthUtil {
         }else{
             throw new AuthenticationCredentialsNotFoundException("No JWT principal found in security context");
         }
-
     }
-
-
-
 }

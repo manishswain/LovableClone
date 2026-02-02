@@ -19,3 +19,8 @@ spring:
 
 jwt:
   secret-key: hdbvf67w2etr373f3447rf3564745yb34f673653r4t3y34t
+
+stripe:
+  secret-key:
+
+client.url: http://localhost:8080
