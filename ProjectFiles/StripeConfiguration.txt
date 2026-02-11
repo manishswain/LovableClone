@@ -1,0 +1,4 @@
+After installing the Stripe CLI, you can use the following command to listen for webhook events and forward them to your local development server:
+    - stripe listen --forward-to localhost:8080/webhooks/payment
+
+Webhook Signing Secret - whsec_2727d0decf6b312b08b4362fc18db3058a1f36602fdabe42d549f549be5e8128
