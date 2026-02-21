@@ -10,7 +10,7 @@ import org.jspecify.annotations.Nullable;
 import java.time.Instant;
 
 public interface SubscriptionService {
-    SubscriptionResponse getCurrentSubscription(Long userId);
+    SubscriptionResponse getCurrentSubscription();
 
     void activateSubscription(Long userId, Long planId, String subscriptionId, String stripeCustomerId);
 
@@ -21,4 +21,6 @@ public interface SubscriptionService {
     void renewSubscriptionPeriod(String subscriptionId, Instant periodStart, Instant periodEnd);
 
     void markSubscriptionAsPastDue(String subscriptionId);
+
+    boolean canCreateNewProject();
 }

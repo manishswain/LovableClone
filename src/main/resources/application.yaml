@@ -18,9 +18,12 @@ spring:
         format_sql: true
 
 jwt:
-  secret-key: hdbvf67w2etr373f3447rf3564745yb34f673653r4t3y34t
+  secret-key:
 
 stripe:
-  secret-key:
+  api:
+    secret-key:
+  webhook:
+    secret-key:
 
 client.url: http://localhost:8080

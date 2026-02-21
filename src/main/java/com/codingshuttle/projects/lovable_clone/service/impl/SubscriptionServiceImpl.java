@@ -11,15 +11,18 @@ import com.codingshuttle.projects.lovable_clone.enums.SubscriptionStatus;
 import com.codingshuttle.projects.lovable_clone.error.ResourceNotFoundException;
 import com.codingshuttle.projects.lovable_clone.mapper.SubscriptionMapper;
 import com.codingshuttle.projects.lovable_clone.repository.PlanRepository;
+import com.codingshuttle.projects.lovable_clone.repository.ProjectMemberRepository;
 import com.codingshuttle.projects.lovable_clone.repository.SubscriptionRepository;
 import com.codingshuttle.projects.lovable_clone.repository.UserRepository;
 import com.codingshuttle.projects.lovable_clone.security.AuthUtil;
 import com.codingshuttle.projects.lovable_clone.service.SubscriptionService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -31,10 +34,22 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private final SubscriptionMapper subscriptionMapper;
     private final UserRepository userRepository;
     private final PlanRepository planRepository;
+    private final ProjectMemberRepository projectMemberRepository;
+
+    private final Integer FREE_TIER_PROJECTS_LIMIT = 1;
 
     @Override
-    public SubscriptionResponse getCurrentSubscription(Long userId) {
-        return null;
+    public SubscriptionResponse getCurrentSubscription() {
+        Long userId = authUtil.getCurrentUserId();
+
+        var currentSubscription = subscriptionRepository.findByUserIdAndStatusIn(userId, Set.of(
+                SubscriptionStatus.ACTIVE, SubscriptionStatus.PAST_DUE,
+                SubscriptionStatus.TRIALING
+        )).orElse(
+                new Subscription()
+        );
+
+        return subscriptionMapper.toSubscriptionResponse(currentSubscription);
     }
 
     @Override
@@ -56,6 +71,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
+    @Transactional
     public void updateSubscription(String gatewaySubscriptionId, SubscriptionStatus status, Instant periodStart, Instant periodEnd, Boolean cancelAtPeriodEnd, Long planId) {
         Subscription subscription = getSubscription(gatewaySubscriptionId);
 
@@ -129,6 +145,18 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         subscriptionRepository.save(subscription);
 
         //Notify user about past due subscription via email or in-app notification
+    }
+
+    @Override
+    public boolean canCreateNewProject() {
+        Long userId = authUtil.getCurrentUserId();
+        SubscriptionResponse currentSubscription = getCurrentSubscription();
+
+        int countOfOwnedProjects = projectMemberRepository.countProjectOwnedByUser(userId);
+        if(currentSubscription.plan() == null){
+            return countOfOwnedProjects < FREE_TIER_PROJECTS_LIMIT;
+        }
+        return countOfOwnedProjects <= currentSubscription.plan().maxProjects();
     }
 
     ///  Utility methods
