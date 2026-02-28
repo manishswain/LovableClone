@@ -17,6 +17,16 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
 
+  ai:
+    openai:
+      api-key:
+      base-url: https://openroute.ai/api
+      chat:
+        options:
+          model: qwen/qwen3-vl-235b-a22b-thinking
+          temperature: 0.0
+          max-tokens: 1500
+
 jwt:
   secret-key:
 
