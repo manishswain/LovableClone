@@ -12,5 +12,4 @@ public interface SubscriptionMapper {
     SubscriptionResponse toSubscriptionResponse(Subscription subscription);
 
     PlanResponse toPlanResponse(Plan plan);
-
 }

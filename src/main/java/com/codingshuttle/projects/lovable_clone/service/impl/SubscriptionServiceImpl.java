@@ -36,7 +36,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private final PlanRepository planRepository;
     private final ProjectMemberRepository projectMemberRepository;
 
-    private final Integer FREE_TIER_PROJECTS_LIMIT = 1;
+    private final Integer FREE_TIER_PROJECTS_LIMIT = 100;
 
     @Override
     public SubscriptionResponse getCurrentSubscription() {
