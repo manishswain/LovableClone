@@ -7,6 +7,7 @@ import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
+import java.util.List;
 
 @Entity
 @Table(name="chat_messages")
@@ -29,8 +30,12 @@ public class ChatMessage {
     })
     ChatSession chatSession;
 
-    @Column(columnDefinition = "text",nullable = false)
-    String content;
+    @OneToMany(mappedBy = "chatMessage", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+            @OrderBy("sequenceOrder ASC")
+    List<ChatEvent> events; // Empty unless assistant
+
+    @Column(columnDefinition = "text")
+    String content; // Null Unless USER
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

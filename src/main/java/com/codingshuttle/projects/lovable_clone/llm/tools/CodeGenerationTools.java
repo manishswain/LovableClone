@@ -32,7 +32,6 @@ public class CodeGenerationTools {
                     "--- START OF THE FILE: %s ---\n%s\n--- END OF THE FILE ---"
                     , cleanPath, content));
         }
-
         return result;
     }
 }
