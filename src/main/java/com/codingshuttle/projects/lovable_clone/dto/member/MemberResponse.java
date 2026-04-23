@@ -8,7 +8,7 @@ public record MemberResponse(
         Long userId,
         String username,
         String name,
-        ProjectRole projectRole,
+        ProjectRole role,
         Instant invitedAt
 ) {
 }

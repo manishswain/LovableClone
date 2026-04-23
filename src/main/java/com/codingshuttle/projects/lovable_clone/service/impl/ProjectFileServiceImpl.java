@@ -2,6 +2,7 @@ package com.codingshuttle.projects.lovable_clone.service.impl;
 
 import com.codingshuttle.projects.lovable_clone.dto.project.FileContentResponse;
 import com.codingshuttle.projects.lovable_clone.dto.project.FileNode;
+import com.codingshuttle.projects.lovable_clone.dto.project.FileTreeResponse;
 import com.codingshuttle.projects.lovable_clone.entity.Project;
 import com.codingshuttle.projects.lovable_clone.entity.ProjectFile;
 import com.codingshuttle.projects.lovable_clone.error.ResourceNotFoundException;
@@ -38,10 +39,10 @@ public class ProjectFileServiceImpl implements ProjectFileService {
     private String projectBucket;
 
     @Override
-    public List<FileNode> getFileTree(Long projectId) {
+    public FileTreeResponse getFileTree(Long projectId) {
         List<ProjectFile> projectFileList = projectFileRepository.findByProjectId(projectId);
-
-        return projectFileMapper.toListOfFileNode(projectFileList);
+        List<FileNode> projectFileNodes = projectFileMapper.toListOfFileNode(projectFileList);
+        return new FileTreeResponse(projectFileNodes);
     }
 
     @Override
