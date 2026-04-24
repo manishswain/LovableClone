@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: runner-pool
+  namespace: shuttle-apps
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: runner
+      status: idle #will be changed to running
+  template:
+    metadata:
+      labels:
+        app: runner
+        status: idle
+    spec:
+      volumes:
+        - name: workspace
+          emptyDir: {}
+        - name: pnpm-store
+          hostPath:
+            path: /mnt/pnpm-store
+            type: DirectoryOrCreate
+      containers:
+        - name: runner
+          image: node:20-alpine
+          workingDir: /app
+          command: ["/bin/sh", "-c", "sleep infinity"]
+          volumeMounts:
+            - name: workspace
+              mountPath: /app
+            - name: pnpm-store
+              mountPath: /root/.local/share/pnpm
+          ports:
+            - containerPort: 5173
+          resources:
+            limits:
+              memory: "1Gi" # Prevent one user from crashing the node
+
+        # 2. THE SYNCER (File Sync)
+        - name: syncer
+          image: minio/mc
+          command: ["/bin/sh", "-c", "sleep infinity"]
+          env:
+            - name: MC_HOST_myminio
+              value: "http://minioadmin:minioadmin123@minio-service:9000"
+          volumeMounts:
+            - name: workspace
+              mountPath: /app

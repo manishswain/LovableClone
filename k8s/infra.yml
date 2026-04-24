@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: minio-service
+  namespace: shuttle-apps
+spec:
+  type: ExternalName
+  externalName: host.docker.internal # Points to your laptop/host
+  ports:
+    - port: 9000
+      targetPort: 9000
+      protocol: TCP

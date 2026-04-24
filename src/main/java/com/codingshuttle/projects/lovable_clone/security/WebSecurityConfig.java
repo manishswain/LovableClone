@@ -36,7 +36,11 @@ public class WebSecurityConfig {
             .authorizeHttpRequests(authorize -> authorize
                     .dispatcherTypeMatchers(DispatcherType.ASYNC).permitAll()
                     .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
-                .requestMatchers("/api/auth/**","/webhooks/**").permitAll()
+                .requestMatchers("/api/auth/**","/webhooks/**"
+                        ,"/swagger-ui/**",           // Swagger UI resources
+                        "/swagger-ui.html",         // Swagger UI main page
+                        "/v3/api-docs/**",          // OpenAPI JSON/YAML docs
+                        "/v3/api-docs.yaml").permitAll()
                 .anyRequest().authenticated()
 
             )
