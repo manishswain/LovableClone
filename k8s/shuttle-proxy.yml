@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shuttle-proxy
+  namespace: shuttle-apps
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shuttle-proxy
+  template:
+    metadata:
+      labels:
+        app: shuttle-proxy
+    spec:
+      containers:
+        - name: proxy
+          image: shuttle-proxy:latest
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+          env:
+            - name: REDIS_URL
+              # Refers to the service in the same namespace
+              value: "redis://redis-service:6379"
+          ports:
+            - containerPort: 80
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: shuttle-proxy-svc
+  namespace: shuttle-apps
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 80
+      targetPort: 80
+  selector:
+    app: shuttle-proxy

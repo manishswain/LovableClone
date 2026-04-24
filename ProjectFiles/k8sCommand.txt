@@ -1,0 +1,18 @@
+# Build Reverse Proxy Docker Image
+docker build -t shuttle-proxy:latest .
+
+# Load that image into kind cluster
+kind load docker-image shuttle-proxy:latest --name shuttle-ai
+
+# Apply the shuttle-proxy deployment and service
+kubectl apply -f shuttle-proxy.yml
+
+#Port Forwarding to access the shuttle-proxy service
+kubectl port-forward service/shuttle-proxy-svc 8090:80
+
+#Port Forwarding to access the redis service
+kubectl port-forward svc/redis-service 6379:6379
+
+# Bypass Mac DNS Resolver for project-6.app.domain.com
+sudo nano /etc/hosts
+
