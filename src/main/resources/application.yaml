@@ -3,8 +3,8 @@ spring:
     name: lovable-clone
 
   datasource:
-    url: jdbc:postgresql://localhost:9000/testDB
-    username: testUser
+    url: jdbc:postgresql://localhost:9010/pgvector-test
+    username: user
     password: password
     driver-class-name: org.postgresql.Driver
 
@@ -17,15 +17,19 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
   ai:
     openai:
       api-key:
-      base-url: https://openroute.ai/api
+      base-url: https://openrouter.ai/api
       chat:
         options:
-          model: qwen/qwen3-vl-235b-a22b-thinking
+          model: tencent/hy3-preview:free
           temperature: 0.0
-          max-tokens: 1500
 
 jwt:
   secret-key:
@@ -37,3 +41,14 @@ stripe:
     secret-key:
 
 client.url: http://localhost:8080
+
+logging:
+  level:
+    org.springframework.ai:
+      chat.client: DEBUG
+
+minio:
+  url: http://localhost:9000
+  access-key: minioadmin
+  secret-key: minioadmin123
+  project-bucket: projects
